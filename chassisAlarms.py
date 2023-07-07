@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import datetime
+import re
 import smtplib
 import threading
 from email.mime.text import MIMEText
@@ -46,8 +47,29 @@ def send_email(sender_email, sender_password, receiver_email, subject, body, fil
 # Create a timestamp for the file name
 timestamp = datetime.datetime.utcnow().strftime("%d-%m-%Y, %H:%M:%S")
 # Define the router credentials and email details
-router_credentials = {
-}
+router_credentials = {}
+
+# Read the /etc/hosts file
+with  open('/etc/hosts', 'r') as file:
+    lines = file.readlines()
+
+# Read and extract router credentials
+for line in lines:
+    # Ignore commented lines and empty lines
+    if line.startswith('#') or line.strip() == '':
+        continue
+
+    # Split the line into hostname and IP address
+    parts = line.split()
+    hostname = parts[1]
+    ip_address = parts[0]
+
+    # Extract router name from hostname
+    match = re.match(r'([A-Za-z0-9-]+)', hostname)
+    if match:
+        router_name = match.group(1)
+        router_credentials[router_name] = ip_address
+
 sender_email = ""
 sender_password = ""
 adrlst = ['']
