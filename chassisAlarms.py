@@ -132,25 +132,28 @@ def file_name():
     fetch_alarms()
     filename = "chassis_alarms.txt"
     with open(filename, 'w') as f:
-        f.write("**************************************************************\n")
-        f.write("*                                                        *\n")
-        f.write("*                        Routers                         *\n")
-        f.write("*                                                        *\n")
-        f.write("**************************************************************\n")
+        f.write("+----------------------------------------------------------------------------------------+\n")
+        f.write("|                                                                                        |\n")
+        f.write("|                        Routers                                                         |\n")
+        f.write("|                                                                                        |\n")
+        f.write("+----------------------------------------------------------------------------------------+\n")
         for device_name, device_ip in device_credentials[0]['Routers'].items():
             if device_name in alarms_dict:
-                f.write(f"-----------------Equipment: {device_name}-----------------\n")
+                f.write("+---------------------------------------------------------------+\n")
+                f.write(f"|               Equipment: {device_name}                     |\n")
+                f.write("+---------------------------------------------------------------+\n")
                 f.write(alarms_dict[device_name])
                 f.write('\n\n')
-
-        f.write("**************************************************************\n")
-        f.write("*                                                        *\n")
-        f.write("*                        Switches                        *\n")
-        f.write("*                                                        *\n")
-        f.write("**************************************************************\n")
+        f.write("+----------------------------------------------------------------------------------------+\n")
+        f.write("|                                                                                        |\n")
+        f.write("|                        Switches                                                        |\n")
+        f.write("|                                                                                        |\n")
+        f.write("+----------------------------------------------------------------------------------------+\n")
         for device_name, device_ip in device_credentials[1]['Switches'].items():
             if device_name in alarms_dict:
-                f.write(f"-----------------Equipment: {device_name}-----------------\n")
+                f.write("+---------------------------------------------------------------+\n")
+                f.write(f"|               Equipment: {device_name}                     |\n")
+                f.write("+---------------------------------------------------------------+\n")
                 f.write(alarms_dict[device_name])
                 f.write('\n\n')
 
