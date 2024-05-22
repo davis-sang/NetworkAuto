@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 import datetime
 import re
 import smtplib
