@@ -5,7 +5,6 @@ import smtplib
 import threading
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
-from threading import Lock
 from email.mime.multipart import MIMEMultipart
 from netmiko import ConnectHandler
 
@@ -64,11 +63,6 @@ def fetch_devices():
 
 # Read and extract router credentials
     for line in lines:
-        # Ignore commented lines and empty lines
-        if line.startswith('#') or line == '' or \
-           "localhost" in line or "jumpbox-ldn" in line or \
-           "ip6-allnodes" in line or "ip6-allrouters" in line:
-            continue
 
     # Split the line into hostname and IP address
         parts = line.split()
@@ -131,31 +125,40 @@ def fetch_alarms():
 def file_name():
     fetch_alarms()
     filename = "chassis_alarms.txt"
+
+    # Function to write the header for each section
+    def write_header(f, section_name):
+        header = [
+            "+" + "-"*88 + "+",
+            "|                                                                                        |",
+            f"|{('**' + section_name + '**').center(88)}|",
+            "|                                                                                        |",
+            "+" + "-"*88 + "+"
+        ]
+        for line in header:
+            f.write(line + "\n")
+
+    # Function to write the device section
+    def write_device_section(f, devices):
+        for device_name, device_ip in devices.items():
+            if device_name in alarms_dict:
+                device_section = [
+                    "+" + "-"*71 + "+",
+                    f"|{'Equipment: ' + device_name.ljust(60)}|",
+                    "+" + "-"*71 + "+"
+                ]
+                for line in device_section:
+                    f.write(line + "\n")
+                f.write(alarms_dict[device_name] + '\n\n')
+
     with open(filename, 'w') as f:
-        f.write("+----------------------------------------------------------------------------------------+\n")
-        f.write("|                                                                                        |\n")
-        f.write("|                        Routers                                                         |\n")
-        f.write("|                                                                                        |\n")
-        f.write("+----------------------------------------------------------------------------------------+\n")
-        for device_name, device_ip in device_credentials[0]['Routers'].items():
-            if device_name in alarms_dict:
-                f.write("+---------------------------------------------------------------+\n")
-                f.write(f"|               Equipment: {device_name}                     |\n")
-                f.write("+---------------------------------------------------------------+\n")
-                f.write(alarms_dict[device_name])
-                f.write('\n\n')
-        f.write("+----------------------------------------------------------------------------------------+\n")
-        f.write("|                                                                                        |\n")
-        f.write("|                        Switches                                                        |\n")
-        f.write("|                                                                                        |\n")
-        f.write("+----------------------------------------------------------------------------------------+\n")
-        for device_name, device_ip in device_credentials[1]['Switches'].items():
-            if device_name in alarms_dict:
-                f.write("+---------------------------------------------------------------+\n")
-                f.write(f"|               Equipment: {device_name}                     |\n")
-                f.write("+---------------------------------------------------------------+\n")
-                f.write(alarms_dict[device_name])
-                f.write('\n\n')
+        # Writing Routers section
+        write_header(f, "ROUTERS")
+        write_device_section(f, device_credentials[0]['Routers'])
+
+        # Writing Switches section
+        write_header(f, "SWITCHES")
+        write_device_section(f, device_credentials[1]['Switches'])
 
     return filename
 
