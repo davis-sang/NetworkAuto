@@ -10,7 +10,7 @@ from netmiko import ConnectHandler
 #Connect to Juniper router and retrieve chassis alarms.
 def get_chassis_alarms(router_name, router_ip, username, password, alarm_dict):
     try:
-        net_connect = ConnectHandler(device_type='juniper', ip=router_ip, username=username, password=password)
+        net_connect = ConnectHandler(device_type='', ip=router_ip, username=username, password=password)
         alarms = net_connect.send_command("show chassis alarms")
         with lock:
             alarm_dict[router_name] = alarms
@@ -54,43 +54,8 @@ device_credentials = [
     {'Switches':{}}
 ]
 
-# Read the /etc/hosts file
 def fetch_devices():
-    
-    with  open('/etc/hosts', 'r') as file:
-        lines = file.readlines()
-
-# Read and extract router credentials
-    for line in lines:
-
-    # Split the line into hostname and IP address
-        parts = line.split()
-        if len(parts) < 2:
-            continue
-        hostname = parts[1]
-        ip_address = parts[0]
-
-    # Extract router name from hostname
-        for hostname in parts[1:]:
-            if is_router(hostname):
-                router_name = is_router(hostname).group(1)
-                device_credentials[0]['Routers'][router_name] = ip_address
-            elif is_switch(hostname):
-                switch_name = is_switch(hostname).group(1)
-                device_credentials[1]['Switches'][switch_name] = ip_address
-            else:
-                print(f"No match found for hostname: {hostname}")
-
-#Function to match router from hosts file.
-def is_router(hostname):
-    return re.match(r'([A-Z]{3}[0-9]{2}-[R]{1}[0-9]{2})', hostname.upper())
-
-#Function to match switch from hosts file.    
-def is_switch(hostname):
-    return re.match(r'([A-Z]{3}[0-9]{2}-[AS]{2}[0-9]{2})', hostname.upper()) or \
-    re.match(r'([A-Z]{3}[0-9]{2}-[EX]{2}[0-9]{2})', hostname.upper()) or \
-    re.match(r'(srx-ubx-.*)', hostname.lower()) or \
-    re.match(r'([a-zA-Z0-9-]+)', hostname.lower())
+    # fetch devices
 
 #Dict to store fetched alarms for each device
 alarms_dict={}
@@ -102,7 +67,7 @@ sender_password = ""
 adrlst = ['']
 receiver_email = ', '.join(adrlst)
 subject = "Critical !!! Chassis Alarms : " + timestamp + "UTC"
-body = "Hi Team, \n\nPlease find attached the chassis alarms for juniper routers/switches as of " + timestamp + "UTC.\n\nRegards,\nJuniper Alarm Monitor"
+body = "Hi Team, \n\nPlease find attached the chassis alarms for equipment as of " + timestamp + "UTC.\n\nRegards,\n"
 
 # Fetch device alarms concurrently
 def fetch_alarms():
