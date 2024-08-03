@@ -7,7 +7,7 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from netmiko import ConnectHandler
 
-#Connect to Juniper router and retrieve chassis alarms.
+#Connect to router and retrieve chassis alarms.
 def get_chassis_alarms(router_name, router_ip, username, password, alarm_dict):
     try:
         net_connect = ConnectHandler(device_type='', ip=router_ip, username=username, password=password)
