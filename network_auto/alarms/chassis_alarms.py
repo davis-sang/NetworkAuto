@@ -1,11 +1,11 @@
 import datetime
-import re
 import smtplib
 import threading
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from netmiko import ConnectHandler
+# TODO: Fix imports using poetry
 
 
 # Connect to router and retrieve chassis alarms.
@@ -25,6 +25,7 @@ def get_chassis_alarms(router_name, router_ip, username, password, alarm_dict):
             alarm_dict[router_name] = "Connection failed !!!"
 
 
+# TODO: import this from /email/email.py
 # Function to send email with the alarms attached.
 def send_email(sender_email, sender_password, receiver_email, subject, body, filename):
     msg = MIMEMultipart()
@@ -100,6 +101,7 @@ def fetch_alarms():
 
 
 # Write alarms to a text file
+# TODO: mailing template using jinja2 template on email/templates
 def file_name():
     fetch_alarms()
     filename = "chassis_alarms.txt"
@@ -142,4 +144,5 @@ def file_name():
 
 
 # Send the email with the alarms file attached
+# TODO: Run using tests, implement celery for scheduling tasks
 send_email(sender_email, sender_password, receiver_email, subject, body, file_name())
